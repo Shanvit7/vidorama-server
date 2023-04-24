@@ -88,29 +88,24 @@ exports.verifyUser = async (req, res) => {
         );
         return res.status(200).json({ message: "Existing user verified successfully",
         userAuthId: secureToken});
-      }
-
-    } else {
-      const userAuthId = uuid();
-      const result = await User.updateOne(
-        { magicToken },
-        { $set: { userAuthId } }
-      );
-      if(result){
-        console.log('New user logging in');
-        const secureToken = jwt.sign(
-          { userAuthId: userAuthId },
-          process.env.JWT_SECRET_KEY
+      } else {
+        const userAuthId = uuid();
+        const result = await User.updateOne(
+          { magicToken },
+          { $set: { userAuthId } }
         );
-        return {
-          statusCode: 201,
-          body: JSON.stringify({
-            message: "User is verified successfully.",
-            userAuthId: secureToken,
-          }),
-        };
-      }
+        if(result){
+          console.log('New user logging in');
+          const secureToken = jwt.sign(
+            { userAuthId: userAuthId },
+            process.env.JWT_SECRET_KEY
+          );
+          return res.status(201).json({ message: "User is verified successfully.",
+          userAuthId: secureToken});
+        }
+    } 
     }
+    return res.status(403).json({message: 'No such user found.'});
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Something went wrong" });
