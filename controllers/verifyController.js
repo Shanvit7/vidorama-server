@@ -19,7 +19,7 @@ exports.verifyEmail = async (req, res) => {
     if (email) {
       const magicToken = uuid();
       const verificationData = {
-        link: `${process.env.CLIENT_BASE_URL}/verify-user/${magicToken}`,
+        link: `${process.env.NETLIFY_URL ||process.env.CLIENT_BASE_URL}/verify-user/${magicToken}`,
       };
       ejs.renderFile(
         "./views/verify-email.ejs",
